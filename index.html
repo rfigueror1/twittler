@@ -1,27 +1,97 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="jquery.js"></script>
-    <script src="data_generator.js"></script>
+    <meta charset="utf-8">
+    <title>Twittler</title>
+    <link rel="stylesheet" href="main.css">
+    <script assync src="jquery.js" type="text/javascript"></script>
+    <script assync src="data_generator.js" type="text/javascript"></script>
   </head>
-  <body>
-    <script>
 
-      $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
+  <body background="DdRrTq0U8AAZWvW.jpg">
+    <img class="foto" src="foto.jpeg" alt="Fullstack Engineer Candidate" width="200">
+    <header class='primary-header container group'>
+      <h1 class ="main_title">Twittler</h1>
+      <br></br>
+      <h2 class ="main_message">Hack Reactor's Twitter designed by Ricardo Figueroa</h2>
+    </header>
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
-        }
+    <input type="text"  class="tweet_text" value="Please write your tweet" id="text" size= "100"/>
 
-      });
 
-    </script>
+    <button class='submit_button'> Submit </button>
+    <button class='btn'> New Tweets Feed </button>
+
+    <div class="incoming_tweets">
+      <div class="user_time">
+      </div>
+    </div>
+
+  <script>
+  $(document).ready(function(){
+    var pullTweets = function(){
+      var $tweetDiv = $('div.incoming_tweets');
+      $tweetDiv.html('');
+
+      var index = streams.home.length - 1;
+      while(index >= 0){
+        var tweet = streams.home[index];
+        var $tweet = $('<div></div>');
+        var milliseconds = new Date().getTime();
+
+        //date = new Date(milliseconds * 1000).toString();
+        //date = date.split(" ");
+        //dateNew = date[0] +" "+ date[1] +" "+ date[2] +" "+ date[4] +"";
+        //$tweet.text(dateNew+ ' @' + tweet.user + ': ' + tweet.message);
+        $tweet.html(tweet.created_at +'<a href=javascript:void(0);'  + " id=" + tweet.user + " class=user-link>" +" @"+ tweet.user + '</a>"'
+          + tweet.message.trim());
+        $tweet.prependTo($tweetDiv);
+        index -= 1;
+      }
+    };
+
+    var selectUser = function(user) {
+          var $tweetDiv = $('div.incoming_tweets');
+          $tweetDiv.html('');
+          $tweetDiv.html('<h2>@' + user + '</h2></br>');
+          var index = (streams.users[user].length) - 1;
+          while(index >= 0) {
+            var tweet = streams.users[user][index];
+            var $tweet = $('<div class="tweet"></div>');
+            $tweet.html(tweet.created_at +'<a href=javascript:void(0);'  + " id=" + tweet.user + " class=user-link>" +" @"+ tweet.user + '</a>"'
+              + tweet.message.trim());
+            $tweet.appendTo($tweetDiv);
+            index -= 1;
+          }
+        };
+
+    var add_my_Tweet = function(){
+      var newTweet = document.getElementById("text").value + "";
+      //console.log(newTweet);
+      var tweet = {};
+      var username = "ricardo";
+      tweet.user = username
+      tweet.message = newTweet;
+      tweet.created_at = new Date();
+      streams.users[username].push(tweet);
+      streams.home.push(tweet);
+    };
+
+
+    $("button").on("click", pullTweets);
+    //$("submit_button").on("click", add_my_Tweet);
+
+    $(document).on("click", "a.user-link", function() {
+          selectUser($(this).attr("id")+"");
+    });
+
+    $(document).on("click", ".submit_button", function() {
+          add_my_Tweet();
+    });
+
+
+  });
+  </script>
+
   </body>
 </html>
